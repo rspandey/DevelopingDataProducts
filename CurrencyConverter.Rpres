@@ -1,0 +1,164 @@
+Exchange Rate Converter
+========================================================
+
+Exchange rate (ForEx rate) is one of the most important means through which a country’s relative level of economic health is determined. A country's foreign exchange rate provides a window to its economic stability, which is why it is constantly watched and analyzed. 
+
+The exchange rate is defined as "the rate at which one country's currency may be converted into another." It may fluctuate daily with the changing market forces of supply and demand of currencies from one country to another.
+
+
+author: Ravi Pandey
+date: 7/10/2015
+
+Exchange Rate - Influencing Factors
+========================================================
+1. Inflation Rates
+2. Interest Rates
+3. Country’s Current Account / Balance of Payments
+4. Government Debt
+5. Terms of Trade
+6. Political Stability & Performance
+7. Recession
+8. Speculation
+
+***
+![Alt Text] (CurrencyConverter-figure/Factors_Affecting_Exchange_Rates.jpg)
+
+
+Why You need the App?.smaller
+========================================================
+All of these factors determine the foreign exchange rate fluctuations. If you send or receive money frequently, being up-to-date on these factors will help you better evaluate the optimal time for international money transfer. To avoid any potential falls in currency exchange rates, opt for a locked-in exchange rate service, which will guarantee that your currency is exchanged at the same rate despite any factors that influence an unfavorable fluctuation.
+***
+![Alt Text] (CurrencyConverter-figure/bigstock-Currency-Exchange-Rates-Board-2231588.jpg)
+
+Conversion Logic (Server.R)
+========================================================
+
+```{r}
+# Loading required libraries
+
+library(shiny)
+library(quantmod)
+library(xts)
+library(zoo)
+
+# Create function for currency conversion using the getFX() function from the
+# quantmod package. Output is a single conversion for a certain currency pair at a day
+
+FXconversion <- function(currencyA,currencyB,amount,days){
+    currency_ratio <- paste(currencyA,"/",currencyB,sep="")
+    FXrate <- xts(get(getFX(currency_ratio,from = Sys.Date()-days,
+                            to = Sys.Date()-days)))
+    amount_converted <- as.numeric(amount*FXrate)
+    return(amount_converted)
+}
+
+# Create history of currency exchange rates or respectively exchanged currencies
+
+FXhistory <- function(currencyA,currencyB,amount,days){
+    currency_ratio <- paste(currencyA,"/",currencyB,sep="")
+    FXrate <- xts(get(getFX(currency_ratio,from = Sys.Date()-days,
+                            to = Sys.Date()-1)))
+    amount_history <- amount*FXrate
+    return(amount_history)
+}
+
+# Create Shiny Server function with input and in interactive plot
+
+shinyServer(
+    function(input, output) {
+        output$oid1 <- renderPrint({input$variable})
+        output$oid2 <- renderPrint({input$variable2})
+        output$amount <- renderPrint({
+            FXconversion(input$variable,input$variable2,input$amount,1)})
+        output$amount2 <- renderPrint({
+            FXconversion(input$variable,input$variable2,input$amount,
+                         input$days+1)})
+        output$myplot <- renderPlot({
+            FX_over_time <- FXhistory(input$variable,input$variable2,
+                                      input$amount, input$days+2)
+            FX_over_tmp <- FX_over_time
+            index <- 2:(length(FX_over_tmp)-1)
+            index[1]<-1
+            FX_over_time_line <- FX_over_tmp[-index]
+            plot(FX_over_time,main = "Value of Currency over Time",
+                 ylab = input$variable)
+            points(FX_over_time[2],pch=21, col = "blue", bg = "green")
+            points(FX_over_time[length(FX_over_time)],pch=21, col = "blue", bg = "green")
+            lines(FX_over_time_line,pch=23,lty=4,col="dark red")
+            legend("topleft","Cut-off Dates",
+                   pch=21, title = "Selected Period")
+        })
+    }
+)
+```
+
+User Interface(ui.R)
+========================================================
+
+```{r}
+#library(shiny)
+shinyUI(pageWithSidebar(
+    headerPanel("Currency Exchange Calculator"),
+    sidebarPanel(
+        selectInput("variable", "Change:",
+                    list("USD",
+                         "EUR",
+                         "GBP",
+                         "AUD",
+                         "CAD",
+                         "CHF",
+                         "DKK",
+                         "HKD",
+                         "JPY",
+                         "KRW",
+                         "NOK",
+                         "NZD",
+                         "SEK",
+                         "MXN")),
+        selectInput("variable2", "To:",
+                    list("EUR",
+                         "USD",
+                         "GBP",
+                         "AUD",
+                         "CAD",
+                         "CHF",
+                         "DKK",
+                         "HKD",
+                         "JPY",
+                         "KRW",
+                         "NOK",
+                         "NZD",
+                         "SEK",
+                         "MXN")),
+        numericInput('amount', 'Amount to be converted at current exchange rate:',
+                     1, min = 0, step = 0.5),
+        numericInput('days', 'no. of Prior periods to look for exchange rates!', 
+                     10, min = 1, max = 480, step = 1)
+        
+    ),
+    mainPanel(
+        tabsetPanel(
+            tabPanel("Instructions",
+                     h5(" This application converts the currency provided in one denomination to the other at the current exchange rate. There is also the option to choose prior periods to see the trend in exchange rates."),
+                     h4("1. Select the currency in From"),
+                     h4("2. Select the currency in To"),
+                     h4("3. Enter the amount to convert(Default is 1)"),
+                     h4("4. Enter the number of prior periods for trend"),
+                     h5("Click the Conversion Tab to view results. You can run this as many times you want")
+                ),
+            tabPanel("Conversion",
+                h3('Exchanged Currency'),
+                h4("From"),
+                textOutput("oid1"),
+                h4("To"),
+                textOutput("oid2"),
+                h4("Amount at current exchange rate"),
+                textOutput("amount"),
+                h4 ("Amount at past exchange rate"),
+                textOutput("amount2"),
+                plotOutput('myplot')                
+                )
+            )
+        )
+    ))
+```
