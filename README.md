@@ -1,7 +1,7 @@
 # DevelopingDataProducts
 
 Check Out The App [Here:](https://ravispandey.shinyapps.io/ExchangeRateTrend)
-Check Out the Pitch [Here:](http://rpubs.com/RaviSPandey/currencyconversion)
+Check Out the Pitch [Here:](http://rpubs.com/RaviSPandey/currencyconversion1)
 
 
 ## Exchange Rate Converter
