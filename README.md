@@ -10,9 +10,6 @@ Exchange rate (ForEx rate) is one of the most important means through which a co
 
 The exchange rate is defined as "the rate at which one country's currency may be converted into another." It may fluctuate daily with the changing market forces of supply and demand of currencies from one country to another.
 
-Ravi Pandey
----
-
 ## Exchange Rate - Influencing Factors
 1. Inflation Rates
 2. Interest Rates
@@ -22,10 +19,14 @@ Ravi Pandey
 6. Political Stability & Performance
 7. Recession
 8. Speculation
----
 
 ## Why You need the App?
 All of these factors determine the foreign exchange rate fluctuations. If you send or receive money frequently, being up-to-date on these factors will help you better evaluate the optimal time for international money transfer. To avoid any potential falls in currency exchange rates, opt for a locked-in exchange rate service, which will guarantee that your currency is exchanged at the same rate despite any factors that influence an unfavorable fluctuation.
+
+## References:
+[Compare Remit](http://www.compareremit.com/)
+[XE Currency Converter](http://www.xe.com/currencyconverter/)
+
 
 
 
